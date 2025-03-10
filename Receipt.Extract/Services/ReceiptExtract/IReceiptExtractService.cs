@@ -1,8 +1,8 @@
 ﻿using Receipt.Extract.Models;
 
-namespace Receipt.Extract.Services
+namespace Receipt.Extract.Services.ReceiptExtract
 {
-    public interface IInvoiceExtractService
+    public interface IReceiptExtractService
     {
         List<Product> Extract(string numReceipt);
     }

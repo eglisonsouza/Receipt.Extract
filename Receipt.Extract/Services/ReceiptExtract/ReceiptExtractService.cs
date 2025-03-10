@@ -2,15 +2,15 @@
 using Receipt.Extract.Extensions;
 using Receipt.Extract.Models;
 
-namespace Receipt.Extract.Services
+namespace Receipt.Extract.Services.ReceiptExtract
 {
-    public class InvoiceExtractService : IInvoiceExtractService
+    public class ReceiptExtractService : IReceiptExtractService
     {
         private readonly List<Product> Products;
         private readonly string UrlReceitp;
         private readonly string CodeReceitp;
 
-        public InvoiceExtractService()
+        public ReceiptExtractService()
         {
             Products = [];
             UrlReceitp = Environment.GetEnvironmentVariable("UrlReceipt") ?? string.Empty;

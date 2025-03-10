@@ -2,19 +2,22 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using Receipt.Extract.Services;
+using Receipt.Extract.Services.ReceiptExtract;
+using Receipt.Extract.Services.ServiceBus;
 
 namespace Receipt.Extract
 {
     public class ReceiptExtractFunction
     {
         private readonly ILogger<ReceiptExtractFunction> _logger;
-        private readonly IInvoiceExtractService _invoiceExtractService;
+        private readonly IReceiptExtractService _invoiceExtractService;
+        private readonly IServiceBus _serviceBus;
 
-        public ReceiptExtractFunction(ILogger<ReceiptExtractFunction> logger, IInvoiceExtractService invoiceExtractService)
+        public ReceiptExtractFunction(ILogger<ReceiptExtractFunction> logger, IReceiptExtractService invoiceExtractService, IServiceBus serviceBus)
         {
             _logger = logger;
             _invoiceExtractService = invoiceExtractService;
+            _serviceBus = serviceBus;
         }
 
         [Function("ReceiptExtract")]
@@ -23,18 +26,16 @@ namespace Receipt.Extract
             _logger.LogInformation("Starting extract of the receipt");
             var numReceipt = req.Query["numReceipt"];
 
-            if (NumReceiptIsInvalid(numReceipt))
+            if (string.IsNullOrWhiteSpace(numReceipt))
                 return new BadRequestObjectResult("numReceipt is required.");
 
-            return new OkObjectResult(_invoiceExtractService.Extract(numReceipt));
-        }
+            var products = _invoiceExtractService.Extract(numReceipt);
 
-        private static bool NumReceiptIsInvalid(string? numReceipt)
-        {
-            if (string.IsNullOrWhiteSpace(numReceipt))
-                return true;
+            _logger.LogInformation("Sending products to topic");
 
-            return false;
+            products.ForEach(async product => await _serviceBus.SendMessage(product));
+
+            return new OkObjectResult(products);
         }
     }
 }
