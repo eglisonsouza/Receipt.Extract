@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "Receipt.Extract": {
+      "commandName": "Project",
+      "commandLineArgs": "--port 7245",
+      "launchBrowser": false
+    }
+  }
+}
