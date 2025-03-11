@@ -33,7 +33,7 @@ namespace Receipt.Extract
 
             _logger.LogInformation("Sending products to topic");
 
-            products.ForEach(async product => await _serviceBus.SendMessage(product));
+            products.ForEach(product => _serviceBus.SendMessage(product));
 
             return new OkObjectResult(products);
         }

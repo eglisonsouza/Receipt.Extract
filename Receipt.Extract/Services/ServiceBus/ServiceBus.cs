@@ -10,9 +10,7 @@ namespace Receipt.Extract.Services.ServiceBus
 
         public ServiceBus()
         {
-            _client = new ServiceBusClient(
-                Environment.GetEnvironmentVariable("NamespaceServiceBus") ?? string.Empty,
-                new DefaultAzureCredential());
+            _client = new ServiceBusClient(Environment.GetEnvironmentVariable("ConnectionString") ?? string.Empty);
 
             _sender = _client.CreateSender(Environment.GetEnvironmentVariable("TopicName") ?? string.Empty);
         }
